@@ -8,22 +8,29 @@ response = get(f"{base_url}{term}", headers={"User-Agent": "Kimchi"})
 if response.status_code != 200:
     print("can't request")
 else:
-    result=[]
+    results=[]
     soup = BeautifulSoup(response.text, 'html.parser')
     jobs = soup.find_all('tr', class_="job")
-    for jobs_tr in jobs:
-        jobs_td = jobs_tr.find_all('td')
-        jobs_td.pop(4)
-        jobs_td.pop(3)
-        jobs_td.pop(0)
-       
-        for item in jobs_td:
-            anchors = item.find_all('a')
-            anchor = anchors[0]
-            link = anchor['href']
-            company = anchors.find('h2', class_="title")
-            region = item.find_all('div', class_="location")
-            print(region, company)
+    for job in jobs:
+        anchors = job.find_all('a', itemprop_="url")
+        print(anchors)
+        print("0-----------------------")
+        title = job.find('h2')
+        company = job.find('h3')
+        locations = job.find_all('div',class_="location")
+        company_info=[]
+        for location in locations:
+            company_info.append(location.string)
+        job_data ={
+            'title' : title.string.strip(),
+            'company' : company.string.strip(),
+            'location' : company_info
+        }
+        results.append(job_data)
+    for result in results:
+        """print(result)"""
+        
+            
             
         
 
